@@ -5,6 +5,10 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: zmkfirmware/zmk-build-arm:stable
+    strategy:
+      fail-fast: false
+      matrix:
+        shield: [sofle_left, sofle_right]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -21,11 +25,10 @@ jobs:
           west init -l config
           west update
           west zephyr-export
-      - name: Build ZMK Left
-        # 보드 목록에 있던 'puchi_ble'을 사용합니다.nice!nano v2와 똑같은 nRF52840 기반이면서 핀 이름 충돌이 없습니다.
-        run: west build -s zmk/app -b puchi_ble -- -DSHIELD=sofle_left -DZMK_CONFIG="${GITHUB_WORKSPACE}/config"
-      - name: Build ZMK Right
-        run: west build -p -s zmk/app -b puchi_ble -- -DSHIELD=sofle_right -DZMK_CONFIG="${GITHUB_WORKSPACE}/config"
+      - name: Build ZMK
+        run: west build -s zmk/app -b puchi_ble -- -DSHIELD=${{ matrix.shield }} -DZMK_CONFIG="${GITHUB_WORKSPACE}/config"
+      - name: Rename artifacts
+        run: cp build/zephyr/zmk.uf2 build/zephyr/${{ matrix.shield }}.uf2
       - name: Archive artifacts
         uses: actions/upload-artifact@v4
         with:
