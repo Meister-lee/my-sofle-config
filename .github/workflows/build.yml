@@ -22,9 +22,9 @@ jobs:
           west update
           west zephyr-export
       - name: Build ZMK Left
-        run: west build -s zmk/app -b promicro_nrf52840 -- -DSHIELD=sofle_left -DZMK_CONFIG="${GITHUB_WORKSPACE}/config"
+        run: west build -s zmk/app -b promicro_nrf52840 -- -DSHIELD=sofle_left -DZMK_CONFIG="${GITHUB_WORKSPACE}/config" -Dnode_label_aliases="pro_micro_i2c=i2c0"
       - name: Build ZMK Right
-        run: west build -p -s zmk/app -b promicro_nrf52840 -- -DSHIELD=sofle_right -DZMK_CONFIG="${GITHUB_WORKSPACE}/config"
+        run: west build -p -s zmk/app -b promicro_nrf52840 -- -DSHIELD=sofle_right -DZMK_CONFIG="${GITHUB_WORKSPACE}/config" -Dnode_label_aliases="pro_micro_i2c=i2c0"
       - name: Archive artifacts
         uses: actions/upload-artifact@v4
         with:
