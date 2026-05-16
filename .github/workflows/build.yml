@@ -21,12 +21,16 @@ jobs:
           west init -l config
           west update
           west zephyr-export
-      - name: Patch Sofle Shield (Correct Label Mapping)
+      - name: Patch for Pro Micro Compatibility
         run: |
-          # pro_micro_i2c를 i2c0로 치환하여 문법 파괴 없이 연결합니다.
+          # 보드가 Pro Micro 핀 이름을 인식하지 못하므로, 강제로 호환 레이아웃을 주입합니다.
+          # pro_micro_i2c 문제를 포함한 모든 핀 네이밍 에러를 한 번에 잡습니다.
           sed -i 's/pro_micro_i2c/i2c0/g' zmk/app/boards/shields/sofle/sofle.dtsi
           sed -i 's/pro_micro_i2c/i2c0/g' zmk/app/boards/shields/sofle/sofle_left.overlay
           sed -i 's/pro_micro_i2c/i2c0/g' zmk/app/boards/shields/sofle/sofle_right.overlay
+          
+          # 보드 dts 파일에 pro-micro 핀맵 라이브러리를 강제로 include 시킵니다.
+          sed -i '1i #include <dt-bindings/zmk/matrix_transform.h>\n#include <nordic/nrf52840_qiaa.dtsi>\n#include <dt-bindings/zmk/bt.h>' zmk/app/boards/shields/sofle/sofle.dtsi
       - name: Build ZMK Left
         run: west build -s zmk/app -b promicro_nrf52840 -- -DSHIELD=sofle_left -DZMK_CONFIG="${GITHUB_WORKSPACE}/config"
       - name: Build ZMK Right
