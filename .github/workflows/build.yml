@@ -21,6 +21,12 @@ jobs:
           west init -l config
           west update
           west zephyr-export
+      - name: Patch Sofle Shield (Force Fix)
+        run: |
+          # 빌드가 시작되기 전, 에러를 일으키는 pro_micro_i2c 이름표를 시스템에서 완전히 지워버립니다.
+          sed -i '/pro_micro_i2c/d' zmk/app/boards/shields/sofle/sofle.dtsi
+          sed -i '/pro_micro_i2c/d' zmk/app/boards/shields/sofle/sofle_left.overlay
+          sed -i '/pro_micro_i2c/d' zmk/app/boards/shields/sofle/sofle_right.overlay
       - name: Build ZMK Left
         run: west build -s zmk/app -b promicro_nrf52840 -- -DSHIELD=sofle_left -DZMK_CONFIG="${GITHUB_WORKSPACE}/config"
       - name: Build ZMK Right
