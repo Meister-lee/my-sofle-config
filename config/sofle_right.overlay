@@ -1,1 +1,14 @@
+/ {
+    /* 에러가 나는 pro_micro_i2c 이름표를 강제로 생성하여 빈 곳에 연결합니다 */
+    pro_micro_i2c: i2c0 {
+        compatible = "nordic,nrf-twi";
+        #address-cells = <1>;
+        #size-cells = <0>;
+        status = "disabled"; // 에러만 안 나게 하고 실제 기능은 끕니다
+    };
+};
 
+/* 혹시 모를 충돌을 방지하기 위해 기존 노드를 비활성화합니다 */
+&pro_micro_i2c {
+    status = "disabled";
+};
