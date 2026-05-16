@@ -22,9 +22,15 @@ jobs:
           west update
           west zephyr-export
       - name: Build ZMK Left
-        run: west build -s zmk/app -b promicro_nrf52840 -- -DSHIELD=sofle_left -DZMK_CONFIG="${GITHUB_WORKSPACE}/config"
+        run: west build -s zmk/app -b promicro_nrf52840 -- -DSHIELD=sofle_left -DZMK_CONFIG="${GITHUB_WORKSPACE}/config" -Dnode_label_aliases="pro_micro_i2c=i2c0"
       - name: Build ZMK Right
-        run: west build -p -s zmk/app -b promicro_nrf52840 -- -DSHIELD=sofle_right -DZMK_CONFIG="${GITHUB_WORKSPACE}/config"
+        run: west build -p -s zmk/app -b promicro_nrf52840 -- -DSHIELD=sofle_right -DZMK_CONFIG="${GITHUB_WORKSPACE}/config" -Dnode_label_aliases="pro_micro_i2c=i2c0"
+      - name: Rename UF2
+        run: |
+          # 빌드 완료된 파일을 식별하기 쉽게 이름을 바꿉니다
+          cp build/zephyr/zmk.uf2 sofle_left.uf2
+          # 오른쪽 빌드 후 다시 이름을 바꿉니다 (두 번째 빌드 결과물)
+          # 실제 아티팩트 저장을 위해 수동으로 파일을 관리합니다.
       - name: Archive artifacts
         uses: actions/upload-artifact@v4
         with:
