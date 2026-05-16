@@ -3,6 +3,8 @@ on: [push, pull_request, workflow_dispatch]
 jobs:
   build:
     runs-on: ubuntu-latest
+    container:
+      image: zmkfirmware/zmk-build-arm:stable
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -14,14 +16,19 @@ jobs:
             zephyr
             bootloader
           key: ${{ runner.os }}-build-${{ hashFiles('**/west.yml') }}
-      - name: Install West and Build
-        uses: zmkfirmware/zmk-action-setup@v1
-      - name: Build ZMK
+      - name: Initialize West
         run: |
-          west build -s app -b nice_nano_v2 -- -DSHIELD=sofle_left
-          cp build/zephyr/zmk.uf2 sofle_left.uf2
-          west build -p -s app -b nice_nano_v2 -- -DSHIELD=sofle_right
-          cp build/zephyr/zmk.uf2 sofle_right.uf2
+          west init -l config
+          west update
+          west zephyr-export
+      - name: Build ZMK Left
+        run: west build -s app -b nice_nano_v2 -- -DSHIELD=sofle_left
+      - name: Rename Left UF2
+        run: cp build/zephyr/zmk.uf2 sofle_left.uf2
+      - name: Build ZMK Right
+        run: west build -p -s app -b nice_nano_v2 -- -DSHIELD=sofle_right
+      - name: Rename Right UF2
+        run: cp build/zephyr/zmk.uf2 sofle_right.uf2
       - name: Archive artifacts
         uses: actions/upload-artifact@v4
         with:
