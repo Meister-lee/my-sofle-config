@@ -1,0 +1,6 @@
+# github.com/zmkfirmware/zmk-config-split-template 기반 설정
+include:
+  - board: nice_nano_v2
+    shield: sofle_left
+  - board: nice_nano_v2
+    shield: sofle_right
