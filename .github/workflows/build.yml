@@ -18,15 +18,17 @@ jobs:
           key: ${{ runner.os }}-build-${{ hashFiles('**/west.yml') }}
       - name: Initialize West
         run: |
-          west init -l config
+          if [ ! -d ".west" ]; then
+            west init -m https://github.com/zmkfirmware/zmk --mr main .
+          fi
           west update
           west zephyr-export
       - name: Build ZMK Left
-        run: west build -s app -b nice_nano_v2 -- -DSHIELD=sofle_left
+        run: west build -s app -b nice_nano_v2 -- -DSHIELD=sofle_left -DZMK_CONFIG="${GITHUB_WORKSPACE}/config"
       - name: Rename Left UF2
         run: cp build/zephyr/zmk.uf2 sofle_left.uf2
       - name: Build ZMK Right
-        run: west build -p -s app -b nice_nano_v2 -- -DSHIELD=sofle_right
+        run: west build -p -s app -b nice_nano_v2 -- -DSHIELD=sofle_right -DZMK_CONFIG="${GITHUB_WORKSPACE}/config"
       - name: Rename Right UF2
         run: cp build/zephyr/zmk.uf2 sofle_right.uf2
       - name: Archive artifacts
