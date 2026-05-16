@@ -21,10 +21,15 @@ jobs:
           west init -l config
           west update
           west zephyr-export
+      - name: Patch Sofle Shield (Final Fix)
+        run: |
+          # 에러의 원인인 pro_micro_i2c 참조 줄을 강제로 삭제합니다.
+          sed -i '/&pro_micro_i2c/d' zmk/app/boards/shields/sofle/sofle.dtsi
+          sed -i '/pro_micro_i2c/d' zmk/app/boards/shields/sofle/sofle.dtsi
       - name: Build ZMK Left
-        run: west build -s zmk/app -b promicro_nrf52840 -- -DSHIELD=sofle_left -DZMK_CONFIG="${GITHUB_WORKSPACE}/config" -Dnode_label_aliases="pro_micro_i2c=i2c0"
+        run: west build -s zmk/app -b promicro_nrf52840 -- -DSHIELD=sofle_left -DZMK_CONFIG="${GITHUB_WORKSPACE}/config"
       - name: Build ZMK Right
-        run: west build -p -s zmk/app -b promicro_nrf52840 -- -DSHIELD=sofle_right -DZMK_CONFIG="${GITHUB_WORKSPACE}/config" -Dnode_label_aliases="pro_micro_i2c=i2c0"
+        run: west build -p -s zmk/app -b promicro_nrf52840 -- -DSHIELD=sofle_right -DZMK_CONFIG="${GITHUB_WORKSPACE}/config"
       - name: Archive artifacts
         uses: actions/upload-artifact@v4
         with:
