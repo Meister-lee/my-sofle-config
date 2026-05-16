@@ -1,0 +1,10 @@
+/ {
+    /* pro_micro_i2c라는 이름표를 보드의 i2c0 포트에 강제로 붙여줍니다 */
+    aliases {
+        pro_micro_i2c = &i2c0;
+    };
+};
+
+&i2c0 {
+    status = "okay";
+};
