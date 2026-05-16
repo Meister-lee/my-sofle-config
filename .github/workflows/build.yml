@@ -21,19 +21,11 @@ jobs:
           west init -l config
           west update
           west zephyr-export
-      - name: Patch Sofle Shield (Safe Replace)
-        run: |
-          # 1. 문법 구조를 깨뜨리지 않기 위해 pro_micro_i2c를 사용 가능한 이름인 i2c0로 안전하게 치환합니다.
-          sed -i 's/pro_micro_i2c/i2c0/g' zmk/app/boards/shields/sofle/sofle.dtsi
-          sed -i 's/pro_micro_i2c/i2c0/g' zmk/app/boards/shields/sofle/sofle_left.overlay
-          sed -i 's/pro_micro_i2c/i2c0/g' zmk/app/boards/shields/sofle/sofle_right.overlay
-          
-          # 2. 75번째 줄에서 발생하는 파싱 에러를 원천 차단하기 위해 해당 참조 부분(&i2c0)을 안전하게 무력화합니다.
-          sed -i 's/\&i2c0/ /g' zmk/app/boards/shields/sofle/sofle.dtsi
       - name: Build ZMK Left
-        run: west build -s zmk/app -b promicro_nrf52840 -- -DSHIELD=sofle_left -DZMK_CONFIG="${GITHUB_WORKSPACE}/config"
+        # 보드 목록에 있던 'puchi_ble'을 사용합니다.nice!nano v2와 똑같은 nRF52840 기반이면서 핀 이름 충돌이 없습니다.
+        run: west build -s zmk/app -b puchi_ble -- -DSHIELD=sofle_left -DZMK_CONFIG="${GITHUB_WORKSPACE}/config"
       - name: Build ZMK Right
-        run: west build -p -s zmk/app -b promicro_nrf52840 -- -DSHIELD=sofle_right -DZMK_CONFIG="${GITHUB_WORKSPACE}/config"
+        run: west build -p -s zmk/app -b puchi_ble -- -DSHIELD=sofle_right -DZMK_CONFIG="${GITHUB_WORKSPACE}/config"
       - name: Archive artifacts
         uses: actions/upload-artifact@v4
         with:
