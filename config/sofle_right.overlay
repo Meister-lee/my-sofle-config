@@ -1,5 +1,7 @@
-/* pro_micro_i2c 라벨을 보드의 i2c0 노드에 직접 할당합니다 */
-pro_micro_i2c: &i2c0 {};
+/ {
+    /* 시스템이 찾고 있는 pro_micro_i2c 이름표를 i2c0에 강제로 연결합니다 */
+    pro_micro_i2c: &i2c0 {};
+};
 
 &i2c0 {
     status = "okay";
